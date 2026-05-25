@@ -76,6 +76,7 @@ model Order {
 
   userId  Int
   status  String
+  total Int @default(0)
 
   user  User @relation(fields: [userId], references: [id])
 
@@ -116,14 +117,19 @@ model Address {
 }
 
 model Payment {
-  id Int @id @default(autoincrement())
+  id        Int      @id @default(autoincrement())
 
-  orderId Int @unique
-  method  String
-  status  String
+  orderId   Int      @unique
 
-  order Order @relation(fields: [orderId], references: [id])
+  method    String
+
+  status    String
+
+  txnId     String?
+
+  order     Order    @relation(fields: [orderId], references: [id])
 
   createdAt DateTime @default(now())
+
   updatedAt DateTime @updatedAt
 }
