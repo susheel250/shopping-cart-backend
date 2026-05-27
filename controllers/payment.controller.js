@@ -146,3 +146,39 @@ exports.stripeWebhook = async (req, res) => {
     received: true,
   });
 };
+
+exports.getLatestPayment =
+async (req, res) => {
+
+  try {
+
+    const userId =
+      req.user.userId;
+
+    const payment =
+      await prisma.payment.findFirst({
+
+        orderBy: {
+          id: 'desc'
+        },
+
+        include: {
+          order: true
+        }
+
+      });
+
+    res.json(payment);
+
+  } catch (error) {
+
+    console.log(error);
+
+    res.status(500).json({
+      error:
+        'Failed to fetch payment'
+    });
+
+  }
+
+};

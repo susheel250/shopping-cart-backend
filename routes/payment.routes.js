@@ -18,4 +18,12 @@ router.post(
   paymentController.stripeWebhook
 );
 
+router.get(
+  "/latest",
+
+  verifyToken,
+
+  paymentController.getLatestPayment,
+);
+
 module.exports = router;

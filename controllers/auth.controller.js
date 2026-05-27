@@ -4,33 +4,74 @@ const jwt = require('jsonwebtoken');
 
 // Register
 exports.register = async (req, res) => {
+
   try {
-    const { email, password, roleId } = req.body;
+
+    const {
+      name,
+      email,
+      password
+    } = req.body;
+
+    // Check existing user
+    const existingUser =
+      await prisma.user.findUnique({
+
+        where: { email }
+
+      });
+
+    if (existingUser) {
+
+      return res.status(400).json({
+        error: 'Email already exists'
+      });
+
+    }
 
     // Hash password
-    const hashedPassword = await bcrypt.hash(password, 10);
+    const hashedPassword =
+      await bcrypt.hash(password, 10);
 
     // Save user
-    const user = await prisma.user.create({
-      data: {
-        email,
-        password: hashedPassword,
-        roleId
-      }
-    });
+    const user =
+      await prisma.user.create({
+
+        data: {
+
+          name,
+
+          email,
+
+          password: hashedPassword,
+
+          roleId: 1
+
+        }
+
+      });
 
     res.json({
-      message: 'User registered successfully',
+
+      message:
+        'User registered successfully',
+
       user
+
     });
 
   } catch (error) {
+
     console.log(error);
 
     res.status(500).json({
+
       error: 'Registration failed'
+
     });
+
   }
+
 };
 
 // Login

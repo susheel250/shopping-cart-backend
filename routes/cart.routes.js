@@ -22,4 +22,10 @@ router.get(
   cartController.getCartItems
 );
 
+router.delete(
+  '/remove/:id',
+  verifyToken,
+  cartController.removeCartItem
+);
+
 module.exports = router;
