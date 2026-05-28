@@ -76,12 +76,14 @@ model Order {
   id      Int @id @default(autoincrement())
 
   userId  Int
+  addressId Int?
   status  String
   total Int @default(0)
 
   user  User @relation(fields: [userId], references: [id])
 
   items    OrderItem[]
+  address Address? @relation(fields: [addressId], references: [id])
   payment  Payment?
 
   createdAt DateTime @default(now())
@@ -103,18 +105,33 @@ model OrderItem {
 }
 
 model Address {
-  id      Int @id @default(autoincrement())
 
-  userId  Int
-  address String
-  city    String
-  state   String
-  zip     String
+  id        Int      @id @default(autoincrement())
+
+  userId    Int
+
+  fullName  String
+
+  mobile    String
+
+  address   String
+
+  city      String
+
+  state     String
+
+  pincode   String
+
+  isDefault Boolean @default(false)
+
+  createdAt DateTime @default(now())
+
+  updatedAt DateTime @updatedAt
 
   user User @relation(fields: [userId], references: [id])
 
-  createdAt DateTime @default(now())
-  updatedAt DateTime @updatedAt
+  orders Order[]
+
 }
 
 model Payment {

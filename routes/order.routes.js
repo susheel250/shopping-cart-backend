@@ -11,5 +11,13 @@ router.post(
   orderController.createOrder
 );
 
+router.get(
+  "/my-orders",
+
+  verifyToken,
+
+  orderController.getMyOrders,
+);
+
 
 module.exports = router;

@@ -6,6 +6,7 @@ exports.createOrder = async (req, res) => {
   try {
 
     const userId = req.user.userId;
+    const { addressId } = req.body;
 
     // Get cart items with product
     const cartItems = await prisma.cartItem.findMany({
@@ -36,10 +37,19 @@ exports.createOrder = async (req, res) => {
 
     }
 
+    const defaultAddress = await prisma.address.findFirst({
+      where: {
+        userId,
+
+        isDefault: true,
+      },
+    });
+
     // Create order
     const order = await prisma.order.create({
       data: {
         userId,
+        addressId: addressId || defaultAddress?.id,
         status: 'PENDING',
         total
       }
@@ -77,6 +87,57 @@ exports.createOrder = async (req, res) => {
 
     res.status(500).json({
       error: 'Failed to create order'
+    });
+
+  }
+};
+
+exports.getMyOrders =
+async (req, res) => {
+
+  try {
+
+    const userId =
+      req.user.userId;
+
+    const orders =
+      await prisma.order.findMany({
+
+        where: {
+          userId
+        },
+
+        include: {
+          address: true,
+          payment: true,
+
+          items: {
+
+            include: {
+              product: true
+            }
+
+          }
+
+        },
+
+        orderBy: {
+          id: 'desc'
+        }
+
+      });
+
+    res.json(orders);
+
+  } catch (error) {
+
+    console.log(error);
+
+    res.status(500).json({
+
+      error:
+        'Failed to fetch orders'
+
     });
 
   }
