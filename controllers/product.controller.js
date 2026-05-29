@@ -12,13 +12,25 @@ exports.createProduct = async (req, res) => {
       categoryId
     } = req.body;
 
+    // Uploaded image
+
+    const image =
+      req.file
+        ? req.file.filename
+        : null;
+
     const product = await prisma.product.create({
       data: {
         name,
-        price,
+
+        price: parseInt(price),
+
         description,
-        categoryId
-      }
+
+        categoryId: parseInt(categoryId),
+
+        image,
+      },
     });
 
     res.json(product);

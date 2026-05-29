@@ -42,6 +42,11 @@ app.use('/api/orders', orderRoutes);
 app.use('/api/payment', paymentRoutes);
 
 app.use('/api/address', addressRoutes);
+app.use(
+  "/uploads",
+
+  express.static("uploads"),
+);
 
 app.get('/', (req, res) => {
   res.send('API running');
