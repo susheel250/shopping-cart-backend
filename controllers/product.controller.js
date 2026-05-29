@@ -69,3 +69,15 @@ exports.getProducts = async (req, res) => {
 
   }
 };
+
+exports.getProductById = async (req, res) => {
+    const productId = parseInt(req.params.id);
+
+    const product = await prisma.product.findUnique({
+      where: {
+        id: productId,
+      },
+    });
+
+    res.json(product);
+  };
