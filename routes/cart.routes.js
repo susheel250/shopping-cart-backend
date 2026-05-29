@@ -28,4 +28,10 @@ router.delete(
   cartController.removeCartItem
 );
 
+router.get(
+  '/count',
+  verifyToken,
+  cartController.getCartCount
+);
+
 module.exports = router;

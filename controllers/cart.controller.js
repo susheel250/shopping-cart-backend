@@ -98,3 +98,33 @@ async (req, res) => {
   }
 
 };
+
+exports.getCartCount = async (req, res) => {
+
+  try {
+
+    const userId = req.user.userId;
+
+    const count = await prisma.cartItem.count({
+
+      where: {
+        userId
+      }
+
+    });
+
+    res.json({
+      count
+    });
+
+  } catch (error) {
+
+    console.log(error);
+
+    res.status(500).json({
+      error: 'Failed to fetch cart count'
+    });
+
+  }
+
+};
