@@ -15,6 +15,17 @@ exports.createAddress = async (req, res) => {
       pincode
     } = req.body;
 
+    const addressCount =
+      await prisma.address.count({
+
+        where: {
+          userId
+        }
+
+      });
+
+    const isDefault = addressCount === 0;
+
     const newAddress =
       await prisma.address.create({
 
@@ -25,7 +36,8 @@ exports.createAddress = async (req, res) => {
           address,
           city,
           state,
-          pincode
+          pincode,
+          isDefault
         }
 
       });
