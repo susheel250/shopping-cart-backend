@@ -142,3 +142,51 @@ async (req, res) => {
 
   }
 };
+
+exports.getOrderById = async (
+  req,
+  res
+) => {
+  try {
+    const userId =
+      req.user.userId;
+
+    const orderId =
+      parseInt(req.params.id);
+
+    const order =
+      await prisma.order.findFirst({
+        where: {
+          id: orderId,
+          userId,
+        },
+
+        include: {
+          address: true,
+
+          items: {
+            include: {
+              product: true,
+            },
+          },
+
+          payment: true,
+        },
+      });
+
+    if (!order) {
+      return res.status(404).json({
+        error: "Order not found",
+      });
+    }
+
+    res.json(order);
+  } catch (error) {
+    console.log(error);
+
+    res.status(500).json({
+      error:
+        "Failed to fetch order",
+    });
+  }
+};
