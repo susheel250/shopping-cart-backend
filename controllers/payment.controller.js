@@ -9,14 +9,13 @@ exports.createCheckoutSession = async (req, res) => {
   try {
     const userId = req.user.userId;
 
-    // Get latest order
+    const { orderId } = req.body;
+
+    // Get selected order
     const order = await prisma.order.findFirst({
       where: {
+        id: Number(orderId),
         userId,
-      },
-
-      orderBy: {
-        id: "desc",
       },
 
       include: {
@@ -35,17 +34,22 @@ exports.createCheckoutSession = async (req, res) => {
       });
     }
 
-    // ADD PAYMENT CREATE HERE
-
-    await prisma.payment.create({
-      data: {
+    // Prevent duplicate payment records
+    const existingPayment = await prisma.payment.findFirst({
+      where: {
         orderId: order.id,
-
-        method: "STRIPE",
-
-        status: "PENDING",
       },
     });
+
+    if (!existingPayment) {
+      await prisma.payment.create({
+        data: {
+          orderId: order.id,
+          method: "STRIPE",
+          status: "PENDING",
+        },
+      });
+    }
 
     // Create Stripe line items
     const lineItems = order.items.map((item) => ({
@@ -62,7 +66,7 @@ exports.createCheckoutSession = async (req, res) => {
       quantity: item.quantity,
     }));
 
-    // Create Stripe checkout session
+    // Create Stripe session
     const session = await stripe.checkout.sessions.create({
       payment_method_types: ["card"],
 
@@ -74,19 +78,20 @@ exports.createCheckoutSession = async (req, res) => {
         orderId: order.id.toString(),
       },
 
-      success_url: "http://localhost:4200/success",
+      success_url:
+        "http://localhost:5173/payment/success",
 
-      cancel_url: "http://localhost:4200/cancel",
+      cancel_url:
+        "http://localhost:5173/payment/cancel",
     });
 
-    // Return checkout URL
-    res.json({
+    return res.json({
       url: session.url,
     });
   } catch (error) {
     console.log(error);
 
-    res.status(500).json({
+    return res.status(500).json({
       error: "Stripe checkout failed",
     });
   }
