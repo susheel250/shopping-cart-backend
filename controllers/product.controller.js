@@ -51,9 +51,17 @@ exports.getProducts = async (req, res) => {
 
   try {
 
+    const { search,categoryId } = req.query;
     const products = await prisma.product.findMany({
-      include: {
-        category: true
+      where: {
+        ...(search && {
+          name: {
+            contains: search
+          }
+        }),
+        ...(categoryId && {
+          categoryId: parseInt(categoryId)
+        })
       }
     });
 
