@@ -48,33 +48,58 @@ exports.createProduct = async (req, res) => {
 
 // Get products
 exports.getProducts = async (req, res) => {
-
   try {
+    const { search, categoryId, page = 1, limit = 4 } = req.query;
 
-    const { search,categoryId } = req.query;
-    const products = await prisma.product.findMany({
-      where: {
-        ...(search && {
-          name: {
-            contains: search
-          }
-        }),
-        ...(categoryId && {
-          categoryId: parseInt(categoryId)
-        })
-      }
+    const pageNumber = parseInt(page);
+
+    const pageSize = parseInt(limit);
+
+    const skip = (pageNumber - 1) * pageSize;
+
+    const where = {
+      ...(search && {
+        name: {
+          contains: search,
+        },
+      }),
+
+      ...(categoryId && {
+        categoryId: parseInt(categoryId),
+      }),
+    };
+
+    const totalProducts = await prisma.product.count({
+      where,
     });
 
-    res.json(products);
+    const products = await prisma.product.findMany({
+      where,
 
+      skip,
+
+      take: pageSize,
+
+      orderBy: {
+        createdAt: "desc",
+      },
+    });
+
+    res.json({
+      products,
+
+      currentPage: pageNumber,
+
+      totalPages: Math.ceil(totalProducts / pageSize),
+
+      totalProducts,
+    });
   } catch (error) {
-
     console.log(error);
 
     res.status(500).json({
-      error: 'Failed to fetch products'
+      error: "Failed to fetch products",
     });
-
   }
 };
 
