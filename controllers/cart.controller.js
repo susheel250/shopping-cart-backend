@@ -126,3 +126,39 @@ exports.getCartCount = async (req, res) => {
     });
   }
 };
+
+exports.updateQuantity = async (req, res) => {
+  try {
+    const { cartItemId } = req.params;
+
+    const { quantity } = req.body;
+
+    if (quantity < 1) {
+      return res.status(400).json({
+        error: "Quantity must be at least 1",
+      });
+    }
+
+    const cartItem = await prisma.cartItem.update({
+      where: {
+        id: parseInt(cartItemId),
+      },
+
+      data: {
+        quantity,
+      },
+    });
+
+    res.json({
+      message: "Quantity updated successfully",
+
+      cartItem,
+    });
+  } catch (error) {
+    console.log(error);
+
+    res.status(500).json({
+      error: "Failed to update quantity",
+    });
+  }
+};

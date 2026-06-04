@@ -34,4 +34,9 @@ router.get(
   cartController.getCartCount
 );
 
+router.put(
+  '/update-quantity/:cartItemId',
+  verifyToken,
+  cartController.updateQuantity
+);
 module.exports = router;
