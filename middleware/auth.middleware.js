@@ -22,7 +22,7 @@ exports.verifyToken = (req, res, next) => {
     // Verify token
     const decoded = jwt.verify(
       token,
-      'secretkey'
+      process.env.JWT_SECRET
     );
 
     // Save user data in request
