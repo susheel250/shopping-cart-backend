@@ -58,10 +58,21 @@ exports.getProducts = async (req, res) => {
     const skip = (pageNumber - 1) * pageSize;
 
     const where = {
+      deletedAt: null,
+
       ...(search && {
-        name: {
-          contains: search,
-        },
+        OR: [
+          {
+            name: {
+              contains: search,
+            },
+          },
+          {
+            description: {
+              contains: search,
+            },
+          },
+        ],
       }),
 
       ...(categoryId && {
@@ -70,15 +81,11 @@ exports.getProducts = async (req, res) => {
     };
 
     const totalProducts = await prisma.product.count({
-     where: {
-        deletedAt: null,
-      }
+    where,
     });
 
     const products = await prisma.product.findMany({
-      where: {
-        deletedAt: null,
-      },
+      where,
 
       skip,
 
