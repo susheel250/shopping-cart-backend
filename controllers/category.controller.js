@@ -45,3 +45,37 @@ exports.getCategories = async (req, res) => {
 
   }
 };
+
+exports.updateCategory = async (req, res) => {
+
+  try {
+
+    const categoryId =
+      parseInt(req.params.id);
+
+    const { name } = req.body || {};
+
+    const category =
+      await prisma.category.update({
+        where: {
+          id: categoryId
+        },
+        data: {
+          name
+        }
+      });
+
+    res.json(category);
+
+  } catch (error) {
+
+    console.log(error);
+
+    res.status(500).json({
+      error:
+        "Failed to update category"
+    });
+
+  }
+
+};

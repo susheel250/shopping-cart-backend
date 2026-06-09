@@ -48,6 +48,7 @@ model Product {
   price       Int
   description String?
   image       String?
+  deletedAt   DateTime?
 
   categoryId Int
   category   Category @relation(fields: [categoryId], references: [id])

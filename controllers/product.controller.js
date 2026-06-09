@@ -70,11 +70,15 @@ exports.getProducts = async (req, res) => {
     };
 
     const totalProducts = await prisma.product.count({
-      where,
+     where: {
+        deletedAt: null,
+      }
     });
 
     const products = await prisma.product.findMany({
-      where,
+      where: {
+        deletedAt: null,
+      },
 
       skip,
 

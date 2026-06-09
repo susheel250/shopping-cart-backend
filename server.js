@@ -16,6 +16,7 @@ const productRoutes = require('./routes/product.routes');
 const orderRoutes = require('./routes/order.routes');
 const paymentRoutes = require('./routes/payment.routes');
 const addressRoutes = require('./routes/address.routes');
+const adminRoutes = require('./routes/admin.routes');
 
 // IMPORTANT
 // Stripe webhook route BEFORE express.json()
@@ -46,6 +47,11 @@ app.use(
   "/uploads",
 
   express.static("uploads"),
+);
+
+app.use(
+  "/api/admin",
+  adminRoutes
 );
 
 app.get('/', (req, res) => {
